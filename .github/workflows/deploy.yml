@@ -29,7 +29,7 @@ jobs:
     - name: Publish Website
       shell: pwsh
       run: |
-        & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" EmployeeManage/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
+        & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" EmployeeManage/EmployeeManagement/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
 
     # 5. Login to Azure using Service Principal
     - name: Azure Login
