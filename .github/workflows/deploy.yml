@@ -10,34 +10,23 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    # 1. Checkout code
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. Restore NuGet Packages
     - name: Restore NuGet Packages
       run: nuget restore EmployeeManage.sln
 
-    # 3. Build the Project
     - name: Build with MSBuild
-      shell: pwsh
-      run: |
-        # Use & to call MSBuild.exe with full path
-        & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" EmployeeManage.sln /p:Configuration=Release
+      run: msbuild EmployeeManage.sln /p:Configuration=Release
 
-    # 4. Publish Output to /publish Folder
     - name: Publish Website
-      shell: pwsh
-      run: |
-        & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" EmployeeManage/EmployeeManagment/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
+      run: msbuild EmployeeManage/EmployeeManagment/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
 
-    # 5. Login to Azure using Service Principal
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # 6. Deploy to Azure App Service
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
