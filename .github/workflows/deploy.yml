@@ -23,12 +23,12 @@ jobs:
 
     - name: Publish Website
       run: |
-        & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" "EmployeeManagment/EmployeeManagment.csproj" /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
+           & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" "EmployeeManagment/EmployeeManagment.csproj" /t:WebPublish /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="${{ github.workspace }}/publish"
 
     - name: Debug — Check publish folder
       run: |
         Write-Host "=== Checking publish folder ==="
-        Get-ChildItem -Recurse ./publish
+        Get-ChildItem -Recurse "${{ github.workspace }}/publish"
 
     - name: Azure Login
       uses: azure/login@v1
