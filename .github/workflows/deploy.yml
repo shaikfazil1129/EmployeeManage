@@ -19,13 +19,13 @@ jobs:
 
     # Build the Project
     - name: Build with MSBuild
-      run: msbuild EmployeeManage.sln /p:Configuration=Release
+      run: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" EmployeeManage.sln /p:Configuration=Release'
 
     # Publish Output to /publish Folder
     - name: Publish Website
-      run: msbuild EmployeeManage/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
+      run: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" EmployeeManage/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"'
 
-    # Login to Azure using Service Principal (NO publish profile needed)
+    # Login to Azure using Service Principal
     - name: Azure Login
       uses: azure/login@v1
       with:
