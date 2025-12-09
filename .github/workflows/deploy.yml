@@ -1,0 +1,42 @@
+name: Deploy .NET Framework 4.8 MVC to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Restore NuGet Packages
+    - name: Restore NuGet Packages
+      run: nuget restore EmployeeManage.sln
+
+    # Build the Project
+    - name: Build with MSBuild
+      run: msbuild EmployeeManage.sln /p:Configuration=Release
+
+    # Publish Output to /publish Folder
+    - name: Publish Website
+      run: msbuild EmployeeManage/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
+
+    # Login to Azure using Service Principal (NO publish profile needed)
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    # Deploy to Azure App Service
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ secrets.AZURE_APP_SERVICE_NAME }}
+        package: ./publish
