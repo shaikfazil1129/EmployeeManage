@@ -1,50 +1,42 @@
-name: Deploy to Azure App Service
+name: Deploy .NET Framework 4.8 MVC to Azure App Service
 
 on:
   push:
     branches:
-      - main  # Trigger the deployment when code is pushed to 'main' branch.
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: windows-latest
 
     steps:
-    # Step 1: Checkout the code from GitHub repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up .NET Framework SDK (version 4.8)
-    - name: Set up .NET Framework SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '4.8'
+    # Restore NuGet Packages
+    - name: Restore NuGet Packages
+      run: nuget restore EmployeeManage.sln
 
-    # Step 3: Restore NuGet packages (dependencies)
-    - name: Restore NuGet packages
-      run: nuget restore
+    # Build the Project
+    - name: Build with MSBuild
+      run: msbuild EmployeeManage.sln /p:Configuration=Release
 
-    # Step 4: Build the project using MSBuild
-    - name: Build the project
-      run: msbuild /p:Configuration=Release
+    # Publish Output to /publish Folder
+    - name: Publish Website
+      run: msbuild EmployeeManage/EmployeeManage.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
 
-    # Step 5: Publish the project to a folder (this creates the deployable output)
-    - name: Publish the project
-      run: msbuild /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:PublishUrl=$(System.DefaultWorkingDirectory)\publish
-
-    # Step 6: Log in to Azure using GitHub Secrets (Service Principal)
+    # Login to Azure using Service Principal (NO publish profile needed)
     - name: Azure Login
       uses: azure/login@v1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    # Step 7: Deploy to Azure App Service
-    - name: Deploy to Azure App Service
+    # Deploy to Azure App Service
+    - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ secrets.AZURE_APP_SERVICE_NAME }}
-        slot-name: 'production'  # Use 'production' or your deployment slot name
-        # publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        package: $(System.DefaultWorkingDirectory)\publish
+        package: ./publish
