@@ -28,7 +28,7 @@ jobs:
 
     - name: Publish Website
       run: |
-        & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" "EmployeeManage/EmployeeManagment/EmployeeManage.csproj" /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
+        & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" "EmployeeManagment/EmployeeManagment.csproj" /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="./publish"
 
     - name: Azure Login
       uses: azure/login@v1
